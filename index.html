@@ -1,0 +1,563 @@
+<!DOCTYPE html>
+<html lang="ko">
+<head>
+<meta charset="UTF-8" />
+<meta name="viewport" content="width=device-width, initial-scale=1.0" />
+<title>Emojify · GIF 이모티콘 생성기 (Slack Emoji Maker)</title>
+<link rel="preconnect" href="https://fonts.googleapis.com" />
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+<link href="https://fonts.googleapis.com/css2?family=Black+Han+Sans&family=Do+Hyeon&family=Jua&family=Gaegu:wght@700&display=swap" rel="stylesheet" />
+<style>
+  :root{
+    --bg:#0f1117; --panel:#191c26; --panel2:#222633; --line:#2c3142;
+    --txt:#e7e9f0; --muted:#9aa0b4; --accent:#6c8cff; --accent2:#a06cff;
+    --ok:#37d399; --warn:#ffb13b; --err:#ff5d6c;
+    --radius:14px;
+  }
+  *{box-sizing:border-box}
+  body{
+    margin:0; font-family:'Pretendard','Apple SD Gothic Neo','Malgun Gothic',system-ui,sans-serif;
+    background:radial-gradient(1200px 600px at 80% -10%, #1c2030 0%, var(--bg) 60%);
+    color:var(--txt); min-height:100vh; padding:28px 16px 60px;
+  }
+  .wrap{max-width:1040px; margin:0 auto}
+  header.top{text-align:center; margin-bottom:26px}
+  header.top h1{
+    font-size:30px; margin:0 0 6px;
+    background:linear-gradient(90deg,var(--accent),var(--accent2));
+    -webkit-background-clip:text; background-clip:text; color:transparent; font-weight:800;
+  }
+  header.top p{color:var(--muted); margin:0; font-size:14px}
+  .grid{display:grid; grid-template-columns:1fr 360px; gap:20px; align-items:start}
+  @media (max-width:880px){ .grid{grid-template-columns:1fr} }
+  .card{background:var(--panel); border:1px solid var(--line); border-radius:var(--radius); padding:20px}
+  .card h2{font-size:13px; letter-spacing:.08em; text-transform:uppercase; color:var(--muted); margin:0 0 14px; font-weight:700}
+  label.fld{display:block; margin-bottom:16px}
+  label.fld>span{display:block; font-size:13px; color:var(--muted); margin-bottom:6px; font-weight:600}
+  textarea, select, input[type=text]{
+    width:100%; background:var(--panel2); color:var(--txt); border:1px solid var(--line);
+    border-radius:10px; padding:11px 12px; font-size:14px; font-family:inherit; outline:none;
+  }
+  textarea{min-height:120px; resize:vertical; line-height:1.5}
+  textarea:focus, select:focus{border-color:var(--accent)}
+  .row{display:flex; gap:12px}
+  .row>*{flex:1}
+  input[type=range]{width:100%; accent-color:var(--accent)}
+  input[type=color]{
+    width:100%; height:40px; border:1px solid var(--line); border-radius:10px; background:var(--panel2);
+    cursor:pointer; padding:4px;
+  }
+  .checks{display:flex; gap:18px; flex-wrap:wrap; margin-bottom:16px}
+  .chk{display:flex; align-items:center; gap:7px; font-size:14px; color:var(--txt); cursor:pointer}
+  .chk input{width:17px; height:17px; accent-color:var(--accent); cursor:pointer}
+  .presets{display:grid; grid-template-columns:repeat(4,1fr); gap:8px; margin-bottom:6px}
+  @media (max-width:520px){ .presets{grid-template-columns:repeat(3,1fr)} }
+  .preset{
+    border:1px solid var(--line); background:var(--panel2); color:var(--txt); border-radius:10px;
+    padding:9px 4px; font-size:12.5px; cursor:pointer; text-align:center; transition:.12s; font-weight:600;
+  }
+  .preset:hover{border-color:var(--accent)}
+  .preset.active{border-color:var(--accent); background:linear-gradient(180deg,rgba(108,140,255,.22),rgba(108,140,255,.05))}
+  .stage{display:flex; flex-direction:column; align-items:center; gap:14px}
+  .previewBox{
+    width:256px; height:256px; border-radius:16px; display:flex; align-items:center; justify-content:center;
+    background-image:
+      linear-gradient(45deg,#2a2f3d 25%,transparent 25%),
+      linear-gradient(-45deg,#2a2f3d 25%,transparent 25%),
+      linear-gradient(45deg,transparent 75%,#2a2f3d 75%),
+      linear-gradient(-45deg,transparent 75%,#2a2f3d 75%);
+    background-size:22px 22px; background-position:0 0,0 11px,11px -11px,-11px 0;
+    background-color:#1b1e28; border:1px solid var(--line); overflow:hidden;
+  }
+  #preview{image-rendering:auto; border-radius:8px}
+  .btn{
+    border:none; border-radius:11px; padding:13px 18px; font-size:15px; font-weight:700; cursor:pointer;
+    width:100%; color:#fff; background:linear-gradient(90deg,var(--accent),var(--accent2)); transition:.15s;
+  }
+  .btn:hover{filter:brightness(1.08)}
+  .btn:disabled{opacity:.55; cursor:wait}
+  .btn.ghost{background:var(--panel2); border:1px solid var(--line); color:var(--txt)}
+  .result{display:none; flex-direction:column; align-items:center; gap:10px; margin-top:6px}
+  .result.show{display:flex}
+  #resultImg{width:128px; height:128px; border-radius:10px; background:#fff0;
+    background-image:linear-gradient(45deg,#2a2f3d 25%,transparent 25%),linear-gradient(-45deg,#2a2f3d 25%,transparent 25%),linear-gradient(45deg,transparent 75%,#2a2f3d 75%),linear-gradient(-45deg,transparent 75%,#2a2f3d 75%);
+    background-size:16px 16px; background-position:0 0,0 8px,8px -8px,-8px 0;}
+  .meta{font-size:12.5px; color:var(--muted); text-align:center; line-height:1.5}
+  .meta b{color:var(--ok)}
+  .meta .over{color:var(--err)}
+  .hint{font-size:12px; color:var(--muted); margin-top:-8px; margin-bottom:14px; line-height:1.5}
+  footer{text-align:center; color:var(--muted); font-size:12.5px; margin-top:36px; line-height:1.7}
+  footer code{background:var(--panel2); padding:2px 6px; border-radius:6px; color:var(--txt)}
+</style>
+</head>
+<body>
+<div class="wrap">
+  <header class="top">
+    <h1>Emojify</h1>
+    <p>텍스트를 한 줄씩 넣으면 순서대로 바뀌는 애니메이션 이모티콘을 만듭니다 · Slack 최적화 (128×128)</p>
+  </header>
+
+  <div class="grid">
+    <!-- ===== 컨트롤 ===== -->
+    <div class="card">
+      <h2>1 · 프리셋</h2>
+      <div class="presets" id="presets"></div>
+      <p class="hint">프리셋을 누르면 아래 색·폰트·효과가 자동으로 채워집니다. 이후 자유롭게 수정하세요.</p>
+
+      <h2>2 · 텍스트 프레임</h2>
+      <label class="fld">
+        <span>한 줄 = 한 프레임 (순서대로 전환)</span>
+        <textarea id="frames" spellcheck="false"></textarea>
+      </label>
+
+      <h2>3 · 스타일</h2>
+      <div class="row">
+        <label class="fld">
+          <span>폰트</span>
+          <select id="font">
+            <option value="'Black Han Sans', sans-serif">Black Han Sans (굵게)</option>
+            <option value="'Jua', sans-serif">Jua (둥글게)</option>
+            <option value="'Do Hyeon', sans-serif">Do Hyeon</option>
+            <option value="'Gaegu', cursive">Gaegu (손글씨)</option>
+            <option value="system-ui, 'Malgun Gothic', sans-serif">시스템 기본</option>
+            <option value="'Courier New', monospace">Monospace</option>
+          </select>
+        </label>
+        <label class="fld">
+          <span>크기 (px)</span>
+          <select id="size">
+            <option value="128">128 (Slack 권장)</option>
+            <option value="96">96</option>
+            <option value="64">64</option>
+            <option value="160">160</option>
+          </select>
+        </label>
+      </div>
+
+      <div class="checks">
+        <label class="chk"><input type="checkbox" id="transparent" /> 투명 배경</label>
+        <label class="chk"><input type="checkbox" id="rainbow" /> 무지개 글자</label>
+        <label class="chk"><input type="checkbox" id="glow" /> 글로우 효과</label>
+        <label class="chk"><input type="checkbox" id="bold" checked /> 볼드</label>
+      </div>
+
+      <div class="row">
+        <label class="fld"><span>글자색</span><input type="color" id="textColor" value="#ffffff" /></label>
+        <label class="fld"><span>배경색</span><input type="color" id="bgColor" value="#1a1a2e" /></label>
+      </div>
+
+      <label class="fld">
+        <span>프레임 속도 — <b id="speedVal">350</b> ms</span>
+        <input type="range" id="speed" min="80" max="1200" step="10" value="350" />
+      </label>
+    </div>
+
+    <!-- ===== 미리보기 / 출력 ===== -->
+    <div class="card stage">
+      <h2 style="align-self:flex-start">미리보기</h2>
+      <div class="previewBox">
+        <canvas id="preview" width="256" height="256"></canvas>
+      </div>
+      <button class="btn" id="generate">GIF 생성하기</button>
+      <div class="result" id="result">
+        <img id="resultImg" alt="생성된 GIF" />
+        <a id="download" class="btn ghost" download="emoticon.gif">⬇ GIF 다운로드</a>
+        <div class="meta" id="meta"></div>
+      </div>
+    </div>
+  </div>
+
+  <footer>
+    의존성 없는 단일 파일 · 모든 처리는 브라우저에서 실행됩니다.<br/>
+    GitHub Pages 배포: 이 파일을 저장소에 <code>index.html</code>로 올리고 Settings → Pages 활성화하면 끝.
+  </footer>
+</div>
+
+<script>
+/* ============================================================
+   GIF89a 인코더 (LZW) — 외부 의존성 없음, 동기 처리
+   ============================================================ */
+const GifEncoder = (() => {
+  // ---- LZW 압축 (GIF variable-length codes, LSB-first) ----
+  function lzwEncode(minCodeSize, indices) {
+    const clearCode = 1 << minCodeSize;
+    const eoiCode = clearCode + 1;
+    let codeSize = minCodeSize + 1;
+    let dict = new Map();
+    const out = [];
+    let cur = 0, curBits = 0;
+    const emit = (code) => {
+      cur |= code << curBits;
+      curBits += codeSize;
+      while (curBits >= 8) { out.push(cur & 0xff); cur >>= 8; curBits -= 8; }
+    };
+    const initDict = () => {
+      dict = new Map();
+      for (let i = 0; i < clearCode; i++) dict.set(String.fromCharCode(i), i);
+    };
+    initDict();
+    let next = eoiCode + 1;
+    emit(clearCode);
+    let prefix = String.fromCharCode(indices[0]);
+    for (let i = 1; i < indices.length; i++) {
+      const k = String.fromCharCode(indices[i]);
+      const combo = prefix + k;
+      if (dict.has(combo)) { prefix = combo; continue; }
+      emit(dict.get(prefix));
+      dict.set(combo, next++);
+      if (next === (1 << codeSize) + 1) {
+        if (codeSize < 12) codeSize++;
+      }
+      if (next === 4097) { emit(clearCode); initDict(); next = eoiCode + 1; codeSize = minCodeSize + 1; }
+      prefix = k;
+    }
+    emit(dict.get(prefix));
+    emit(eoiCode);
+    if (curBits > 0) out.push(cur & 0xff);
+    return out;
+  }
+
+  // ---- 바이트 버퍼 ----
+  class ByteBuf {
+    constructor() { this.b = []; }
+    u8(v) { this.b.push(v & 0xff); }
+    u16(v) { this.b.push(v & 0xff, (v >> 8) & 0xff); } // little-endian
+    str(s) { for (let i = 0; i < s.length; i++) this.b.push(s.charCodeAt(i)); }
+    bytes(arr) { for (let i = 0; i < arr.length; i++) this.b.push(arr[i] & 0xff); }
+    blocks(arr) { // 255바이트 서브블록으로 분할
+      let i = 0;
+      while (i < arr.length) {
+        const n = Math.min(255, arr.length - i);
+        this.b.push(n);
+        for (let j = 0; j < n; j++) this.b.push(arr[i + j] & 0xff);
+        i += n;
+      }
+      this.b.push(0);
+    }
+  }
+
+  // ---- 메인: frames = [{indices:Uint8Array, width,height}], palette = [[r,g,b]...], opts ----
+  function encode({ width, height, palette, frames, delayMs, transparentIndex }) {
+    // 팔레트 크기를 2의 거듭제곱으로
+    let tableSize = 2;
+    while (tableSize < palette.length) tableSize <<= 1;
+    if (tableSize > 256) tableSize = 256;
+    const gctBits = Math.log2(tableSize) - 1; // size field
+    const minCodeSize = Math.max(2, Math.log2(tableSize));
+
+    const buf = new ByteBuf();
+    buf.str('GIF89a');
+    // Logical Screen Descriptor
+    buf.u16(width); buf.u16(height);
+    buf.u8(0x80 | (7 << 4) | gctBits); // GCT flag, color res 7, sort 0, size
+    buf.u8(transparentIndex >= 0 ? transparentIndex : 0); // bg color index
+    buf.u8(0);
+    // Global Color Table
+    for (let i = 0; i < tableSize; i++) {
+      const c = palette[i] || [0, 0, 0];
+      buf.u8(c[0]); buf.u8(c[1]); buf.u8(c[2]);
+    }
+    // NETSCAPE 무한 루프
+    buf.u8(0x21); buf.u8(0xff); buf.u8(0x0b); buf.str('NETSCAPE2.0');
+    buf.u8(0x03); buf.u8(0x01); buf.u16(0); buf.u8(0);
+
+    const delayCs = Math.max(2, Math.round(delayMs / 10)); // 1/100초
+    for (const f of frames) {
+      // Graphic Control Extension
+      buf.u8(0x21); buf.u8(0xf9); buf.u8(0x04);
+      const disposal = transparentIndex >= 0 ? 2 : 1; // 투명: 복원
+      buf.u8((disposal << 2) | (transparentIndex >= 0 ? 1 : 0));
+      buf.u16(delayCs);
+      buf.u8(transparentIndex >= 0 ? transparentIndex : 0);
+      buf.u8(0);
+      // Image Descriptor
+      buf.u8(0x2c); buf.u16(0); buf.u16(0); buf.u16(width); buf.u16(height); buf.u8(0);
+      // LZW data
+      buf.u8(minCodeSize);
+      buf.blocks(lzwEncode(minCodeSize, f.indices));
+    }
+    buf.u8(0x3b); // trailer
+    return new Uint8Array(buf.b);
+  }
+
+  return { encode };
+})();
+
+/* ============================================================
+   색상 양자화 (히스토그램 + 미디언 컷)
+   ============================================================ */
+function quantize(pixelLists, maxColors) {
+  // pixelLists: 각 프레임의 {data:Uint8ClampedArray}
+  const hist = new Map();
+  for (const px of pixelLists) {
+    const d = px.data;
+    for (let i = 0; i < d.length; i += 4) {
+      if (d[i + 3] < 128) continue; // 투명 픽셀 제외
+      const key = (d[i] << 16) | (d[i + 1] << 8) | d[i + 2];
+      hist.set(key, (hist.get(key) || 0) + 1);
+    }
+  }
+  const colors = [];
+  for (const [key, count] of hist) {
+    colors.push({ r: (key >> 16) & 255, g: (key >> 8) & 255, b: key & 255, c: count });
+  }
+  if (colors.length === 0) return [[0, 0, 0]];
+  if (colors.length <= maxColors) return colors.map(c => [c.r, c.g, c.b]);
+
+  // 미디언 컷
+  let boxes = [colors];
+  const channelRange = (box, ch) => {
+    let lo = 255, hi = 0;
+    for (const c of box) { const v = c[ch]; if (v < lo) lo = v; if (v > hi) hi = v; }
+    return hi - lo;
+  };
+  while (boxes.length < maxColors) {
+    // 가장 넓은 박스 선택
+    let bi = -1, bestRange = -1, bestCh = 'r';
+    for (let i = 0; i < boxes.length; i++) {
+      if (boxes[i].length < 2) continue;
+      for (const ch of ['r', 'g', 'b']) {
+        const rg = channelRange(boxes[i], ch);
+        if (rg > bestRange) { bestRange = rg; bi = i; bestCh = ch; }
+      }
+    }
+    if (bi < 0) break;
+    const box = boxes[bi];
+    box.sort((a, b) => a[bestCh] - b[bestCh]);
+    const mid = box.length >> 1;
+    boxes.splice(bi, 1, box.slice(0, mid), box.slice(mid));
+  }
+  return boxes.map(box => {
+    let r = 0, g = 0, b = 0, w = 0;
+    for (const c of box) { r += c.r * c.c; g += c.g * c.c; b += c.b * c.c; w += c.c; }
+    return [Math.round(r / w), Math.round(g / w), Math.round(b / w)];
+  });
+}
+
+function buildIndexer(palette) {
+  const cache = new Map();
+  return (r, g, b) => {
+    const key = (r << 16) | (g << 8) | b;
+    const hit = cache.get(key);
+    if (hit !== undefined) return hit;
+    let best = 0, bestD = Infinity;
+    for (let i = 0; i < palette.length; i++) {
+      const p = palette[i];
+      const dr = r - p[0], dg = g - p[1], db = b - p[2];
+      const d = dr * dr + dg * dg + db * db;
+      if (d < bestD) { bestD = d; best = i; }
+    }
+    cache.set(key, best);
+    return best;
+  };
+}
+
+/* ============================================================
+   UI 로직
+   ============================================================ */
+const $ = id => document.getElementById(id);
+const PRESETS = [
+  { name: '파티 🎉', font: "'Black Han Sans', sans-serif", bg: '#1a1a2e', text: '#ffffff', glow: true, rainbow: true, transparent: false },
+  { name: '네온', font: "'Do Hyeon', sans-serif", bg: '#0d0d0d', text: '#00fff7', glow: true, rainbow: false, transparent: false },
+  { name: '클래식', font: "'Jua', sans-serif", bg: '#ffffff', text: '#111111', glow: false, rainbow: false, transparent: false },
+  { name: '다크', font: "system-ui, sans-serif", bg: '#2b2b2b', text: '#ffffff', glow: false, rainbow: false, transparent: false },
+  { name: '캔디', font: "'Jua', sans-serif", bg: '#ffe0f0', text: '#ff3d8b', glow: false, rainbow: false, transparent: false },
+  { name: '매트릭스', font: "'Courier New', monospace", bg: '#000000', text: '#39ff14', glow: true, rainbow: false, transparent: false },
+  { name: '선샤인', font: "'Black Han Sans', sans-serif", bg: '#fff3b0', text: '#ff7b00', glow: false, rainbow: false, transparent: false },
+  { name: '투명', font: "'Black Han Sans', sans-serif", bg: '#1a1a2e', text: '#ff4757', glow: false, rainbow: false, transparent: true },
+];
+
+let activePreset = 0;
+const presetWrap = $('presets');
+PRESETS.forEach((p, i) => {
+  const el = document.createElement('button');
+  el.className = 'preset' + (i === 0 ? ' active' : '');
+  el.textContent = p.name;
+  el.onclick = () => applyPreset(i);
+  presetWrap.appendChild(el);
+});
+
+function applyPreset(i) {
+  activePreset = i;
+  const p = PRESETS[i];
+  [...presetWrap.children].forEach((el, j) => el.classList.toggle('active', j === i));
+  $('font').value = p.font;
+  $('bgColor').value = p.bg;
+  $('textColor').value = p.text;
+  $('glow').checked = p.glow;
+  $('rainbow').checked = p.rainbow;
+  $('transparent').checked = p.transparent;
+  drawPreview(0);
+}
+
+$('frames').value = '월요일\n화요일\n오늘은\n불금!';
+$('speed').oninput = () => { $('speedVal').textContent = $('speed').value; };
+
+// 입력 변경 시 미리보기 갱신
+['font', 'size', 'transparent', 'rainbow', 'glow', 'bold', 'textColor', 'bgColor', 'frames']
+  .forEach(id => $(id).addEventListener('input', () => { /* 즉시 반영은 애니메이션 루프가 처리 */ }));
+
+function getFrames() {
+  return $('frames').value.split('\n').map(s => s.trim()).filter(s => s.length);
+}
+
+// ---- 텍스트 자동 맞춤 (줄바꿈 + 폰트 크기 축소) ----
+function wrapLines(ctx, text, maxW) {
+  const words = text.split(/\s+/);
+  const lines = [];
+  let line = '';
+  const pushToken = (tok) => {
+    // 토큰 자체가 너무 길면 글자 단위로 분해
+    if (ctx.measureText(tok).width <= maxW) return [tok];
+    const parts = []; let cur = '';
+    for (const ch of tok) {
+      if (ctx.measureText(cur + ch).width > maxW && cur) { parts.push(cur); cur = ch; }
+      else cur += ch;
+    }
+    if (cur) parts.push(cur);
+    return parts;
+  };
+  for (const w of words) {
+    for (const tok of pushToken(w)) {
+      const test = line ? line + ' ' + tok : tok;
+      if (ctx.measureText(test).width > maxW && line) { lines.push(line); line = tok; }
+      else line = test;
+    }
+  }
+  if (line) lines.push(line);
+  return lines;
+}
+
+function fitText(ctx, text, box, family, weight) {
+  const pad = box * 0.10;
+  const maxW = box - pad * 2, maxH = box - pad * 2;
+  for (let size = Math.floor(box * 0.85); size >= 8; size--) {
+    ctx.font = `${weight} ${size}px ${family}`;
+    const lines = wrapLines(ctx, text, maxW);
+    const lineH = size * 1.12;
+    if (lines.length * lineH <= maxH) {
+      let fits = true;
+      for (const l of lines) if (ctx.measureText(l).width > maxW) { fits = false; break; }
+      if (fits) return { size, lines, lineH };
+    }
+  }
+  ctx.font = `${weight} 8px ${family}`;
+  return { size: 8, lines: [text], lineH: 9 };
+}
+
+// ---- 한 프레임을 캔버스에 그림 ----
+function renderFrame(ctx, box, text, frameIdx, totalFrames) {
+  const transparent = $('transparent').checked;
+  const rainbow = $('rainbow').checked;
+  const glow = $('glow').checked;
+  const weight = $('bold').checked ? '700' : '400';
+  const family = $('font').value;
+
+  ctx.clearRect(0, 0, box, box);
+  if (!transparent) { ctx.fillStyle = $('bgColor').value; ctx.fillRect(0, 0, box, box); }
+
+  const color = rainbow ? `hsl(${(frameIdx / Math.max(1, totalFrames)) * 360}, 95%, 60%)` : $('textColor').value;
+  const { size, lines, lineH } = fitText(ctx, text, box, family, weight);
+  ctx.font = `${weight} ${size}px ${family}`;
+  ctx.textAlign = 'center';
+  ctx.textBaseline = 'middle';
+  if (glow) { ctx.shadowColor = color; ctx.shadowBlur = box * 0.10; }
+  else { ctx.shadowBlur = 0; }
+  ctx.fillStyle = color;
+
+  const totalH = lines.length * lineH;
+  let y = box / 2 - totalH / 2 + lineH / 2;
+  for (const l of lines) { ctx.fillText(l, box / 2, y); y += lineH; }
+  ctx.shadowBlur = 0;
+}
+
+// ---- 미리보기 애니메이션 ----
+const pv = $('preview');
+const pctx = pv.getContext('2d');
+let previewTimer = null, previewFrame = 0;
+function drawPreview() {
+  const frames = getFrames();
+  if (!frames.length) { pctx.clearRect(0, 0, 256, 256); return; }
+  // 256px 캔버스에 직접 그려 미리보기 (실제 출력은 선택 크기)
+  renderFrame(pctx, 256, frames[previewFrame % frames.length], previewFrame % frames.length, frames.length);
+}
+// 가변 속도 미리보기 루프
+function loopPreview() {
+  drawPreview();
+  previewFrame++;
+  clearTimeout(loopPreview._t);
+  loopPreview._t = setTimeout(loopPreview, +$('speed').value);
+}
+
+// ---- GIF 생성 ----
+async function generate() {
+  const frames = getFrames();
+  if (!frames.length) { alert('텍스트를 한 줄 이상 입력하세요.'); return; }
+  const btn = $('generate');
+  btn.disabled = true; btn.textContent = '생성 중…';
+
+  try {
+    await document.fonts.ready;
+    const box = +$('size').value;
+    const transparent = $('transparent').checked;
+
+    // 오프스크린 렌더
+    const c = document.createElement('canvas');
+    c.width = box; c.height = box;
+    const ctx = c.getContext('2d', { willReadFrequently: true });
+
+    const imageDatas = [];
+    for (let i = 0; i < frames.length; i++) {
+      renderFrame(ctx, box, frames[i], i, frames.length);
+      imageDatas.push(ctx.getImageData(0, 0, box, box));
+    }
+
+    // 팔레트: 투명이면 255색 + 투명 슬롯, 아니면 256색
+    const maxColors = transparent ? 255 : 256;
+    const palette = quantize(imageDatas, maxColors);
+    const indexer = buildIndexer(palette);
+    let transparentIndex = -1;
+    if (transparent) { transparentIndex = palette.length; palette.push([0, 0, 0]); }
+
+    const encFrames = imageDatas.map(img => {
+      const d = img.data;
+      const idx = new Uint8Array(box * box);
+      for (let p = 0, q = 0; p < d.length; p += 4, q++) {
+        if (transparent && d[p + 3] < 128) idx[q] = transparentIndex;
+        else idx[q] = indexer(d[p], d[p + 1], d[p + 2]);
+      }
+      return { indices: idx };
+    });
+
+    const bytes = GifEncoder.encode({
+      width: box, height: box, palette, frames: encFrames,
+      delayMs: +$('speed').value, transparentIndex
+    });
+
+    const blob = new Blob([bytes], { type: 'image/gif' });
+    const url = URL.createObjectURL(blob);
+    $('resultImg').src = url;
+    $('download').href = url;
+    const kb = blob.size / 1024;
+    const over = kb > 128;
+    $('meta').innerHTML =
+      `크기 ${box}×${box} · ${frames.length}프레임 · ` +
+      `용량 <b class="${over ? 'over' : ''}">${kb.toFixed(1)} KB</b>` +
+      (over ? '<br/><span class="over">⚠ Slack 권장 128KB 초과 — 프레임/크기를 줄여보세요.</span>'
+            : '<br/>Slack 업로드 가능 ✔ (128KB 이하)');
+    $('result').classList.add('show');
+  } catch (e) {
+    console.error(e);
+    alert('생성 중 오류: ' + e.message);
+  } finally {
+    btn.disabled = false; btn.textContent = 'GIF 생성하기';
+  }
+}
+$('generate').onclick = generate;
+
+// 폰트 로드 후 미리보기 시작
+document.fonts.ready.then(() => loopPreview());
+loopPreview();
+</script>
+</body>
+</html>
