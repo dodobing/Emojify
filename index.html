@@ -106,7 +106,7 @@
 
       <h2>2 · 텍스트 프레임</h2>
       <label class="fld">
-        <span>한 줄 = 한 프레임 (순서대로 전환)</span>
+        <span>여러 줄 = 줄마다 프레임 · 한 줄 = 글자마다 프레임</span>
         <textarea id="frames" spellcheck="false"></textarea>
       </label>
 
@@ -139,6 +139,7 @@
         <label class="chk"><input type="checkbox" id="rainbow" /> 무지개 글자</label>
         <label class="chk"><input type="checkbox" id="glow" /> 글로우 효과</label>
         <label class="chk"><input type="checkbox" id="bold" checked /> 볼드</label>
+        <label class="chk"><input type="checkbox" id="blankLast" checked /> 마지막 빈 프레임</label>
       </div>
 
       <div class="row">
@@ -398,7 +399,16 @@ $('speed').oninput = () => { $('speedVal').textContent = $('speed').value; };
   .forEach(id => $(id).addEventListener('input', () => { /* 즉시 반영은 애니메이션 루프가 처리 */ }));
 
 function getFrames() {
-  return $('frames').value.split('\n').map(s => s.trim()).filter(s => s.length);
+  const lines = $('frames').value.split('\n').map(s => s.trim()).filter(s => s.length);
+  let frames;
+  if (lines.length <= 1) {
+    // 한 줄 입력 → 글자 단위 프레임 (공백 제외, 이모지/한글 안전)
+    frames = [...(lines[0] || '')].filter(ch => ch.trim() !== '');
+  } else {
+    frames = lines; // 여러 줄 → 줄마다 프레임
+  }
+  if ($('blankLast').checked && frames.length) frames.push(''); // 마지막 빈 프레임
+  return frames;
 }
 
 // ---- 텍스트 자동 맞춤 (줄바꿈 + 폰트 크기 축소) ----
@@ -455,6 +465,8 @@ function renderFrame(ctx, box, text, frameIdx, totalFrames) {
 
   ctx.clearRect(0, 0, box, box);
   if (!transparent) { ctx.fillStyle = $('bgColor').value; ctx.fillRect(0, 0, box, box); }
+
+  if (!text) return; // 빈 프레임: 배경만 (또는 완전 투명)
 
   const color = rainbow ? `hsl(${(frameIdx / Math.max(1, totalFrames)) * 360}, 95%, 60%)` : $('textColor').value;
   const { size, lines, lineH } = fitText(ctx, text, box, family, weight);
