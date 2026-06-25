@@ -28,6 +28,8 @@
     -webkit-background-clip:text; background-clip:text; color:transparent; font-weight:800;
   }
   header.top p{color:var(--muted); margin:0; font-size:14px}
+  .langbar{display:flex; align-items:center; justify-content:center; gap:8px; margin-top:12px}
+  .langbar select{width:auto; padding:7px 10px; font-size:13px; border-radius:9px}
   .grid{display:grid; grid-template-columns:1fr 360px; gap:20px; align-items:start}
   @media (max-width:880px){ .grid{grid-template-columns:1fr} }
   .card{background:var(--panel); border:1px solid var(--line); border-radius:var(--radius); padding:20px}
@@ -94,26 +96,42 @@
 <div class="wrap">
   <header class="top">
     <h1>Emojify</h1>
-    <p>텍스트를 한 줄씩 넣으면 순서대로 바뀌는 애니메이션 이모티콘을 만듭니다 · Slack 최적화 (128×128)</p>
+    <p data-i18n="tagline">텍스트를 한 줄씩 넣으면 순서대로 바뀌는 애니메이션 이모티콘을 만듭니다 · Slack 최적화 (128×128)</p>
+    <div class="langbar">
+      <span aria-hidden="true">🌐</span>
+      <select id="lang" aria-label="Language / 언어">
+        <option value="ko">한국어</option>
+        <option value="en">English</option>
+        <option value="ja">日本語</option>
+        <option value="zh-Hans">简体中文</option>
+        <option value="zh-Hant">繁體中文</option>
+        <option value="es">Español</option>
+        <option value="fr">Français</option>
+        <option value="de">Deutsch</option>
+        <option value="th">ไทย</option>
+        <option value="hi">हिन्दी</option>
+        <option value="ru">Русский</option>
+      </select>
+    </div>
   </header>
 
   <div class="grid">
     <!-- ===== 컨트롤 ===== -->
     <div class="card">
-      <h2>1 · 프리셋</h2>
+      <h2 data-i18n="sec_preset">1 · 프리셋</h2>
       <div class="presets" id="presets"></div>
-      <p class="hint">프리셋을 누르면 아래 색·폰트·효과가 자동으로 채워집니다. 이후 자유롭게 수정하세요.</p>
+      <p class="hint" data-i18n="preset_hint">프리셋을 누르면 아래 색·폰트·효과가 자동으로 채워집니다. 이후 자유롭게 수정하세요.</p>
 
-      <h2>2 · 텍스트 프레임</h2>
+      <h2 data-i18n="sec_frames">2 · 텍스트 프레임</h2>
       <label class="fld">
-        <span>여러 줄 = 줄마다 프레임 · 한 줄 = 글자마다 프레임</span>
+        <span data-i18n="frames_label">여러 줄 = 줄마다 프레임 · 한 줄 = 글자마다 프레임</span>
         <textarea id="frames" spellcheck="false"></textarea>
       </label>
 
-      <h2>3 · 스타일</h2>
+      <h2 data-i18n="sec_style">3 · 스타일</h2>
       <div class="row">
         <label class="fld">
-          <span>폰트</span>
+          <span data-i18n="lbl_font">폰트</span>
           <select id="font">
             <option value="'Black Han Sans', sans-serif">Black Han Sans (굵게)</option>
             <option value="'Jua', sans-serif">Jua (둥글게)</option>
@@ -124,7 +142,7 @@
           </select>
         </label>
         <label class="fld">
-          <span>크기 (px)</span>
+          <span data-i18n="lbl_size">크기 (px)</span>
           <select id="size">
             <option value="128">128 (Slack 권장)</option>
             <option value="96">96</option>
@@ -135,27 +153,27 @@
       </div>
 
       <div class="checks">
-        <label class="chk"><input type="checkbox" id="transparent" /> 투명 배경</label>
-        <label class="chk"><input type="checkbox" id="rainbow" /> 무지개 글자</label>
-        <label class="chk"><input type="checkbox" id="glow" /> 글로우 효과</label>
-        <label class="chk"><input type="checkbox" id="bold" checked /> 볼드</label>
-        <label class="chk"><input type="checkbox" id="blankLast" checked /> 마지막 빈 프레임</label>
+        <label class="chk"><input type="checkbox" id="transparent" /><span data-i18n="chk_transparent">투명 배경</span></label>
+        <label class="chk"><input type="checkbox" id="rainbow" /><span data-i18n="chk_rainbow">무지개 글자</span></label>
+        <label class="chk"><input type="checkbox" id="glow" /><span data-i18n="chk_glow">글로우 효과</span></label>
+        <label class="chk"><input type="checkbox" id="bold" checked /><span data-i18n="chk_bold">볼드</span></label>
+        <label class="chk"><input type="checkbox" id="blankLast" checked /><span data-i18n="chk_blank">마지막 빈 프레임</span></label>
       </div>
 
       <div class="row">
-        <label class="fld"><span>글자색</span><input type="color" id="textColor" value="#ffffff" /></label>
-        <label class="fld"><span>배경색</span><input type="color" id="bgColor" value="#1a1a2e" /></label>
+        <label class="fld"><span data-i18n="lbl_textcolor">글자색</span><input type="color" id="textColor" value="#ffffff" /></label>
+        <label class="fld"><span data-i18n="lbl_bgcolor">배경색</span><input type="color" id="bgColor" value="#1a1a2e" /></label>
       </div>
 
       <label class="fld">
-        <span>프레임 속도 — <b id="speedVal">350</b> ms</span>
+        <span><span data-i18n="speed">프레임 속도</span> — <b id="speedVal">350</b> ms</span>
         <input type="range" id="speed" min="80" max="1200" step="10" value="350" />
       </label>
     </div>
 
     <!-- ===== 미리보기 / 출력 ===== -->
     <div class="card stage">
-      <h2 style="align-self:flex-start">미리보기</h2>
+      <h2 style="align-self:flex-start" data-i18n="preview">미리보기</h2>
       <div class="previewBox">
         <canvas id="preview" width="256" height="256"></canvas>
       </div>
@@ -169,8 +187,8 @@
   </div>
 
   <footer>
-    의존성 없는 단일 파일 · 모든 처리는 브라우저에서 실행됩니다.<br/>
-    GitHub Pages 배포: 이 파일을 저장소에 <code>index.html</code>로 올리고 Settings → Pages 활성화하면 끝.
+    <span data-i18n="footer1">의존성 없는 단일 파일 · 모든 처리는 브라우저에서 실행됩니다.</span><br/>
+    <span data-i18n="footer2">GitHub Pages 배포: index.html을 저장소에 올리고 Settings → Pages를 활성화하면 끝.</span>
   </footer>
 </div>
 
@@ -391,8 +409,255 @@ function applyPreset(i) {
   drawPreview(0);
 }
 
-$('frames').value = '월요일\n화요일\n오늘은\n불금!';
 $('speed').oninput = () => { $('speedVal').textContent = $('speed').value; };
+
+/* ============================================================
+   다국어 (i18n) — 11개 언어, 브라우저 언어 자동 감지
+   ============================================================ */
+const I18N = {
+  ko: {
+    title: 'Emojify · GIF 이모티콘 생성기 (Slack Emoji Maker)',
+    tagline: '텍스트를 한 줄씩 넣으면 순서대로 바뀌는 애니메이션 이모티콘을 만듭니다 · Slack 최적화 (128×128)',
+    sec_preset: '1 · 프리셋', preset_hint: '프리셋을 누르면 아래 색·폰트·효과가 자동으로 채워집니다. 이후 자유롭게 수정하세요.',
+    sec_frames: '2 · 텍스트 프레임', frames_label: '여러 줄 = 줄마다 프레임 · 한 줄 = 글자마다 프레임',
+    sec_style: '3 · 스타일', lbl_font: '폰트', lbl_size: '크기 (px)', size128: '128 (Slack 권장)',
+    chk_transparent: '투명 배경', chk_rainbow: '무지개 글자', chk_glow: '글로우 효과', chk_bold: '볼드', chk_blank: '마지막 빈 프레임',
+    lbl_textcolor: '글자색', lbl_bgcolor: '배경색', speed: '프레임 속도', preview: '미리보기',
+    generate: 'GIF 생성하기', generating: '생성 중…', download: 'GIF 다운로드',
+    meta_dim: '크기', meta_frames: '프레임', meta_filesize: '용량',
+    meta_ok: 'Slack 업로드 가능 ✔ (128KB 이하)', meta_over: '⚠ Slack 권장 128KB 초과 — 프레임/크기를 줄여보세요.',
+    alert_empty: '텍스트를 한 줄 이상 입력하세요.', alert_error: '생성 중 오류: ',
+    footer1: '의존성 없는 단일 파일 · 모든 처리는 브라우저에서 실행됩니다.',
+    footer2: 'GitHub Pages 배포: index.html을 저장소에 올리고 Settings → Pages를 활성화하면 끝.',
+    presets: ['파티 🎉', '네온', '클래식', '다크', '캔디', '매트릭스', '선샤인', '투명'],
+    fonts: ['Black Han Sans (굵게)', 'Jua (둥글게)', 'Do Hyeon', 'Gaegu (손글씨)', '시스템 기본', 'Monospace'],
+    sample: '월요일\n화요일\n오늘은\n불금!',
+  },
+  en: {
+    title: 'Emojify · GIF Emoticon Generator (Slack Emoji Maker)',
+    tagline: 'Type text line by line to build an animated emoji that cycles through it · Slack-optimized (128×128)',
+    sec_preset: '1 · Presets', preset_hint: 'Click a preset to auto-fill the colors, font, and effects below. Then tweak freely.',
+    sec_frames: '2 · Text frames', frames_label: 'Multiple lines = one frame each · Single line = one frame per character',
+    sec_style: '3 · Style', lbl_font: 'Font', lbl_size: 'Size (px)', size128: '128 (Slack recommended)',
+    chk_transparent: 'Transparent', chk_rainbow: 'Rainbow text', chk_glow: 'Glow', chk_bold: 'Bold', chk_blank: 'Blank last frame',
+    lbl_textcolor: 'Text color', lbl_bgcolor: 'Background', speed: 'Frame speed', preview: 'Preview',
+    generate: 'Generate GIF', generating: 'Generating…', download: 'Download GIF',
+    meta_dim: 'Dimensions', meta_frames: 'frames', meta_filesize: 'Size',
+    meta_ok: 'Ready for Slack ✔ (under 128KB)', meta_over: '⚠ Over Slack\'s 128KB limit — reduce frames or size.',
+    alert_empty: 'Enter at least one line of text.', alert_error: 'Generation error: ',
+    footer1: 'Single file, no dependencies · everything runs in your browser.',
+    footer2: 'Deploy on GitHub Pages: add index.html to a repo and enable Settings → Pages.',
+    presets: ['Party 🎉', 'Neon', 'Classic', 'Dark', 'Candy', 'Matrix', 'Sunshine', 'Transparent'],
+    fonts: ['Black Han Sans (Bold)', 'Jua (Round)', 'Do Hyeon', 'Gaegu (Handwriting)', 'System default', 'Monospace'],
+    sample: '3\n2\n1\n🎉',
+  },
+  ja: {
+    title: 'Emojify · GIF絵文字ジェネレーター (Slack絵文字メーカー)',
+    tagline: 'テキストを1行ずつ入力すると、順番に切り替わるアニメーション絵文字を作成します · Slack最適化 (128×128)',
+    sec_preset: '1 · プリセット', preset_hint: 'プリセットを押すと、下の色・フォント・効果が自動入力されます。あとは自由に調整できます。',
+    sec_frames: '2 · テキストフレーム', frames_label: '複数行 = 1行ごとにフレーム · 1行 = 1文字ごとにフレーム',
+    sec_style: '3 · スタイル', lbl_font: 'フォント', lbl_size: 'サイズ (px)', size128: '128 (Slack推奨)',
+    chk_transparent: '透明背景', chk_rainbow: '虹色文字', chk_glow: 'グロー効果', chk_bold: '太字', chk_blank: '最後に空フレーム',
+    lbl_textcolor: '文字色', lbl_bgcolor: '背景色', speed: 'フレーム速度', preview: 'プレビュー',
+    generate: 'GIFを生成', generating: '生成中…', download: 'GIFをダウンロード',
+    meta_dim: 'サイズ', meta_frames: 'フレーム', meta_filesize: '容量',
+    meta_ok: 'Slackにアップロード可能 ✔ (128KB以下)', meta_over: '⚠ Slack推奨の128KBを超過 — フレーム数やサイズを減らしてください。',
+    alert_empty: 'テキストを1行以上入力してください。', alert_error: '生成エラー: ',
+    footer1: '依存関係なしの単一ファイル · すべてブラウザ内で処理されます。',
+    footer2: 'GitHub Pages公開: index.html をリポジトリに置き、Settings → Pages を有効にするだけ。',
+    presets: ['パーティー 🎉', 'ネオン', 'クラシック', 'ダーク', 'キャンディ', 'マトリックス', 'サンシャイン', '透明'],
+    fonts: ['Black Han Sans (太字)', 'Jua (丸み)', 'Do Hyeon', 'Gaegu (手書き)', 'システム標準', '等幅'],
+    sample: '3\n2\n1\n🎉',
+  },
+  'zh-Hans': {
+    title: 'Emojify · GIF 表情生成器 (Slack 表情制作)',
+    tagline: '逐行输入文字，即可生成依次切换的动画表情 · 已为 Slack 优化 (128×128)',
+    sec_preset: '1 · 预设', preset_hint: '点击预设可自动填入下方的颜色、字体和效果，之后可自由调整。',
+    sec_frames: '2 · 文字帧', frames_label: '多行 = 每行一帧 · 单行 = 每字一帧',
+    sec_style: '3 · 样式', lbl_font: '字体', lbl_size: '尺寸 (px)', size128: '128 (Slack 推荐)',
+    chk_transparent: '透明背景', chk_rainbow: '彩虹文字', chk_glow: '发光效果', chk_bold: '加粗', chk_blank: '末尾空白帧',
+    lbl_textcolor: '文字颜色', lbl_bgcolor: '背景颜色', speed: '帧速度', preview: '预览',
+    generate: '生成 GIF', generating: '生成中…', download: '下载 GIF',
+    meta_dim: '尺寸', meta_frames: '帧', meta_filesize: '大小',
+    meta_ok: '可上传到 Slack ✔ (小于 128KB)', meta_over: '⚠ 超过 Slack 推荐的 128KB — 请减少帧数或尺寸。',
+    alert_empty: '请至少输入一行文字。', alert_error: '生成出错: ',
+    footer1: '无依赖的单文件 · 全部在浏览器中处理。',
+    footer2: '部署到 GitHub Pages：将 index.html 放入仓库并启用 Settings → Pages 即可。',
+    presets: ['派对 🎉', '霓虹', '经典', '暗黑', '糖果', '矩阵', '阳光', '透明'],
+    fonts: ['Black Han Sans (粗体)', 'Jua (圆润)', 'Do Hyeon', 'Gaegu (手写)', '系统默认', '等宽'],
+    sample: '3\n2\n1\n🎉',
+  },
+  'zh-Hant': {
+    title: 'Emojify · GIF 表情產生器 (Slack 表情製作)',
+    tagline: '逐行輸入文字，即可產生依序切換的動畫表情 · 已為 Slack 最佳化 (128×128)',
+    sec_preset: '1 · 預設', preset_hint: '點選預設可自動填入下方的顏色、字型與效果，之後可自由調整。',
+    sec_frames: '2 · 文字影格', frames_label: '多行 = 每行一格 · 單行 = 每字一格',
+    sec_style: '3 · 樣式', lbl_font: '字型', lbl_size: '尺寸 (px)', size128: '128 (Slack 建議)',
+    chk_transparent: '透明背景', chk_rainbow: '彩虹文字', chk_glow: '發光效果', chk_bold: '粗體', chk_blank: '結尾空白格',
+    lbl_textcolor: '文字顏色', lbl_bgcolor: '背景顏色', speed: '影格速度', preview: '預覽',
+    generate: '產生 GIF', generating: '產生中…', download: '下載 GIF',
+    meta_dim: '尺寸', meta_frames: '影格', meta_filesize: '大小',
+    meta_ok: '可上傳至 Slack ✔ (小於 128KB)', meta_over: '⚠ 超過 Slack 建議的 128KB — 請減少影格數或尺寸。',
+    alert_empty: '請至少輸入一行文字。', alert_error: '產生時發生錯誤: ',
+    footer1: '無相依套件的單一檔案 · 全部在瀏覽器中處理。',
+    footer2: '部署到 GitHub Pages：將 index.html 放入儲存庫並啟用 Settings → Pages 即可。',
+    presets: ['派對 🎉', '霓虹', '經典', '暗黑', '糖果', '矩陣', '陽光', '透明'],
+    fonts: ['Black Han Sans (粗體)', 'Jua (圓潤)', 'Do Hyeon', 'Gaegu (手寫)', '系統預設', '等寬'],
+    sample: '3\n2\n1\n🎉',
+  },
+  es: {
+    title: 'Emojify · Generador de emoticonos GIF (creador de emojis para Slack)',
+    tagline: 'Escribe texto línea por línea para crear un emoji animado que va cambiando · Optimizado para Slack (128×128)',
+    sec_preset: '1 · Preajustes', preset_hint: 'Pulsa un preajuste para rellenar automáticamente los colores, la fuente y los efectos. Luego ajústalo a tu gusto.',
+    sec_frames: '2 · Fotogramas de texto', frames_label: 'Varias líneas = un fotograma por línea · Una línea = un fotograma por carácter',
+    sec_style: '3 · Estilo', lbl_font: 'Fuente', lbl_size: 'Tamaño (px)', size128: '128 (recomendado para Slack)',
+    chk_transparent: 'Fondo transparente', chk_rainbow: 'Texto arcoíris', chk_glow: 'Resplandor', chk_bold: 'Negrita', chk_blank: 'Último fotograma vacío',
+    lbl_textcolor: 'Color del texto', lbl_bgcolor: 'Fondo', speed: 'Velocidad', preview: 'Vista previa',
+    generate: 'Generar GIF', generating: 'Generando…', download: 'Descargar GIF',
+    meta_dim: 'Tamaño', meta_frames: 'fotogramas', meta_filesize: 'Peso',
+    meta_ok: 'Listo para Slack ✔ (menos de 128KB)', meta_over: '⚠ Supera el límite de 128KB de Slack — reduce los fotogramas o el tamaño.',
+    alert_empty: 'Escribe al menos una línea de texto.', alert_error: 'Error al generar: ',
+    footer1: 'Archivo único sin dependencias · todo se procesa en tu navegador.',
+    footer2: 'Publicar en GitHub Pages: añade index.html a un repositorio y activa Settings → Pages.',
+    presets: ['Fiesta 🎉', 'Neón', 'Clásico', 'Oscuro', 'Caramelo', 'Matrix', 'Sol', 'Transparente'],
+    fonts: ['Black Han Sans (negrita)', 'Jua (redondeada)', 'Do Hyeon', 'Gaegu (manuscrita)', 'Predeterminada del sistema', 'Monoespaciada'],
+    sample: '3\n2\n1\n🎉',
+  },
+  fr: {
+    title: 'Emojify · Générateur d\'émoticônes GIF (créateur d\'emojis Slack)',
+    tagline: 'Saisissez du texte ligne par ligne pour créer un emoji animé qui défile · Optimisé pour Slack (128×128)',
+    sec_preset: '1 · Préréglages', preset_hint: 'Cliquez sur un préréglage pour remplir automatiquement les couleurs, la police et les effets. Ajustez ensuite librement.',
+    sec_frames: '2 · Images de texte', frames_label: 'Plusieurs lignes = une image par ligne · Une ligne = une image par caractère',
+    sec_style: '3 · Style', lbl_font: 'Police', lbl_size: 'Taille (px)', size128: '128 (recommandé pour Slack)',
+    chk_transparent: 'Fond transparent', chk_rainbow: 'Texte arc-en-ciel', chk_glow: 'Lueur', chk_bold: 'Gras', chk_blank: 'Dernière image vide',
+    lbl_textcolor: 'Couleur du texte', lbl_bgcolor: 'Arrière-plan', speed: 'Vitesse', preview: 'Aperçu',
+    generate: 'Générer le GIF', generating: 'Génération…', download: 'Télécharger le GIF',
+    meta_dim: 'Taille', meta_frames: 'images', meta_filesize: 'Poids',
+    meta_ok: 'Prêt pour Slack ✔ (moins de 128 Ko)', meta_over: '⚠ Dépasse la limite de 128 Ko de Slack — réduisez les images ou la taille.',
+    alert_empty: 'Saisissez au moins une ligne de texte.', alert_error: 'Erreur de génération : ',
+    footer1: 'Fichier unique sans dépendances · tout est traité dans votre navigateur.',
+    footer2: 'Déployer sur GitHub Pages : ajoutez index.html à un dépôt et activez Settings → Pages.',
+    presets: ['Fête 🎉', 'Néon', 'Classique', 'Sombre', 'Bonbon', 'Matrix', 'Soleil', 'Transparent'],
+    fonts: ['Black Han Sans (gras)', 'Jua (arrondie)', 'Do Hyeon', 'Gaegu (manuscrite)', 'Système par défaut', 'Monospace'],
+    sample: '3\n2\n1\n🎉',
+  },
+  de: {
+    title: 'Emojify · GIF-Emoticon-Generator (Slack-Emoji-Maker)',
+    tagline: 'Gib Text Zeile für Zeile ein, um ein animiertes Emoji zu erstellen, das durchwechselt · Für Slack optimiert (128×128)',
+    sec_preset: '1 · Vorlagen', preset_hint: 'Klicke auf eine Vorlage, um Farben, Schrift und Effekte unten automatisch zu füllen. Danach frei anpassbar.',
+    sec_frames: '2 · Textbilder', frames_label: 'Mehrere Zeilen = ein Bild pro Zeile · Eine Zeile = ein Bild pro Zeichen',
+    sec_style: '3 · Stil', lbl_font: 'Schriftart', lbl_size: 'Größe (px)', size128: '128 (für Slack empfohlen)',
+    chk_transparent: 'Transparenter Hintergrund', chk_rainbow: 'Regenbogentext', chk_glow: 'Leuchten', chk_bold: 'Fett', chk_blank: 'Letztes Bild leer',
+    lbl_textcolor: 'Textfarbe', lbl_bgcolor: 'Hintergrund', speed: 'Geschwindigkeit', preview: 'Vorschau',
+    generate: 'GIF erstellen', generating: 'Wird erstellt…', download: 'GIF herunterladen',
+    meta_dim: 'Größe', meta_frames: 'Bilder', meta_filesize: 'Dateigröße',
+    meta_ok: 'Bereit für Slack ✔ (unter 128 KB)', meta_over: '⚠ Über Slacks 128-KB-Grenze — reduziere Bilder oder Größe.',
+    alert_empty: 'Gib mindestens eine Textzeile ein.', alert_error: 'Fehler beim Erstellen: ',
+    footer1: 'Einzeldatei ohne Abhängigkeiten · alles läuft in deinem Browser.',
+    footer2: 'Auf GitHub Pages veröffentlichen: index.html in ein Repository legen und Settings → Pages aktivieren.',
+    presets: ['Party 🎉', 'Neon', 'Klassisch', 'Dunkel', 'Bonbon', 'Matrix', 'Sonnenschein', 'Transparent'],
+    fonts: ['Black Han Sans (fett)', 'Jua (rund)', 'Do Hyeon', 'Gaegu (Handschrift)', 'Systemstandard', 'Monospace'],
+    sample: '3\n2\n1\n🎉',
+  },
+  th: {
+    title: 'Emojify · เครื่องสร้างอิโมจิ GIF (สำหรับ Slack)',
+    tagline: 'พิมพ์ข้อความทีละบรรทัด เพื่อสร้างอิโมจิเคลื่อนไหวที่สลับเปลี่ยนตามลำดับ · ปรับให้เหมาะกับ Slack (128×128)',
+    sec_preset: '1 · ค่าที่ตั้งไว้', preset_hint: 'กดค่าที่ตั้งไว้เพื่อเติมสี ฟอนต์ และเอฟเฟกต์ด้านล่างโดยอัตโนมัติ จากนั้นปรับแต่งได้ตามต้องการ',
+    sec_frames: '2 · เฟรมข้อความ', frames_label: 'หลายบรรทัด = หนึ่งเฟรมต่อบรรทัด · บรรทัดเดียว = หนึ่งเฟรมต่อตัวอักษร',
+    sec_style: '3 · สไตล์', lbl_font: 'ฟอนต์', lbl_size: 'ขนาด (px)', size128: '128 (แนะนำสำหรับ Slack)',
+    chk_transparent: 'พื้นหลังโปร่งใส', chk_rainbow: 'ตัวอักษรสีรุ้ง', chk_glow: 'เรืองแสง', chk_bold: 'ตัวหนา', chk_blank: 'เฟรมว่างท้ายสุด',
+    lbl_textcolor: 'สีตัวอักษร', lbl_bgcolor: 'พื้นหลัง', speed: 'ความเร็วเฟรม', preview: 'ตัวอย่าง',
+    generate: 'สร้าง GIF', generating: 'กำลังสร้าง…', download: 'ดาวน์โหลด GIF',
+    meta_dim: 'ขนาด', meta_frames: 'เฟรม', meta_filesize: 'ขนาดไฟล์',
+    meta_ok: 'อัปโหลดไป Slack ได้ ✔ (ไม่เกิน 128KB)', meta_over: '⚠ เกินขีดจำกัด 128KB ของ Slack — ลดจำนวนเฟรมหรือขนาดลง',
+    alert_empty: 'กรุณาพิมพ์ข้อความอย่างน้อยหนึ่งบรรทัด', alert_error: 'เกิดข้อผิดพลาดในการสร้าง: ',
+    footer1: 'ไฟล์เดียวไม่มี dependency · ประมวลผลทั้งหมดในเบราว์เซอร์ของคุณ',
+    footer2: 'เผยแพร่บน GitHub Pages: นำ index.html ใส่ใน repository แล้วเปิด Settings → Pages',
+    presets: ['ปาร์ตี้ 🎉', 'นีออน', 'คลาสสิก', 'มืด', 'แคนดี้', 'เมทริกซ์', 'แสงแดด', 'โปร่งใส'],
+    fonts: ['Black Han Sans (หนา)', 'Jua (มน)', 'Do Hyeon', 'Gaegu (ลายมือ)', 'ค่าเริ่มต้นของระบบ', 'Monospace'],
+    sample: '3\n2\n1\n🎉',
+  },
+  hi: {
+    title: 'Emojify · GIF इमोटिकॉन जनरेटर (Slack इमोजी मेकर)',
+    tagline: 'टेक्स्ट को एक-एक लाइन में डालें और क्रम से बदलने वाला एनिमेटेड इमोजी बनाएं · Slack के लिए अनुकूलित (128×128)',
+    sec_preset: '1 · प्रीसेट', preset_hint: 'किसी प्रीसेट पर क्लिक करें ताकि नीचे के रंग, फ़ॉन्ट और इफ़ेक्ट अपने-आप भर जाएँ। फिर अपनी पसंद से बदलें।',
+    sec_frames: '2 · टेक्स्ट फ़्रेम', frames_label: 'कई लाइनें = हर लाइन एक फ़्रेम · एक लाइन = हर अक्षर एक फ़्रेम',
+    sec_style: '3 · स्टाइल', lbl_font: 'फ़ॉन्ट', lbl_size: 'आकार (px)', size128: '128 (Slack के लिए अनुशंसित)',
+    chk_transparent: 'पारदर्शी पृष्ठभूमि', chk_rainbow: 'इंद्रधनुषी टेक्स्ट', chk_glow: 'ग्लो', chk_bold: 'बोल्ड', chk_blank: 'अंतिम खाली फ़्रेम',
+    lbl_textcolor: 'टेक्स्ट रंग', lbl_bgcolor: 'पृष्ठभूमि', speed: 'फ़्रेम गति', preview: 'पूर्वावलोकन',
+    generate: 'GIF बनाएं', generating: 'बना रहे हैं…', download: 'GIF डाउनलोड करें',
+    meta_dim: 'आकार', meta_frames: 'फ़्रेम', meta_filesize: 'फ़ाइल आकार',
+    meta_ok: 'Slack पर अपलोड के लिए तैयार ✔ (128KB से कम)', meta_over: '⚠ Slack की 128KB सीमा से अधिक — फ़्रेम या आकार घटाएं।',
+    alert_empty: 'कम से कम एक लाइन टेक्स्ट डालें।', alert_error: 'बनाने में त्रुटि: ',
+    footer1: 'बिना किसी निर्भरता वाली एकल फ़ाइल · सब कुछ आपके ब्राउज़र में चलता है।',
+    footer2: 'GitHub Pages पर प्रकाशित करें: index.html को रिपॉज़िटरी में डालें और Settings → Pages सक्षम करें।',
+    presets: ['पार्टी 🎉', 'नियॉन', 'क्लासिक', 'डार्क', 'कैंडी', 'मैट्रिक्स', 'सनशाइन', 'पारदर्शी'],
+    fonts: ['Black Han Sans (बोल्ड)', 'Jua (गोल)', 'Do Hyeon', 'Gaegu (हस्तलेख)', 'सिस्टम डिफ़ॉल्ट', 'मोनोस्पेस'],
+    sample: '3\n2\n1\n🎉',
+  },
+  ru: {
+    title: 'Emojify · Генератор GIF-эмодзи (создание эмодзи для Slack)',
+    tagline: 'Вводите текст построчно, чтобы создать анимированный эмодзи, который перелистывается · Оптимизировано для Slack (128×128)',
+    sec_preset: '1 · Пресеты', preset_hint: 'Нажмите на пресет, чтобы автоматически заполнить цвета, шрифт и эффекты ниже. Затем настройте по своему вкусу.',
+    sec_frames: '2 · Текстовые кадры', frames_label: 'Несколько строк = по кадру на строку · Одна строка = по кадру на символ',
+    sec_style: '3 · Стиль', lbl_font: 'Шрифт', lbl_size: 'Размер (px)', size128: '128 (рекомендуется для Slack)',
+    chk_transparent: 'Прозрачный фон', chk_rainbow: 'Радужный текст', chk_glow: 'Свечение', chk_bold: 'Жирный', chk_blank: 'Пустой последний кадр',
+    lbl_textcolor: 'Цвет текста', lbl_bgcolor: 'Фон', speed: 'Скорость', preview: 'Предпросмотр',
+    generate: 'Создать GIF', generating: 'Создание…', download: 'Скачать GIF',
+    meta_dim: 'Размер', meta_frames: 'кадров', meta_filesize: 'Объём',
+    meta_ok: 'Готово для Slack ✔ (меньше 128 КБ)', meta_over: '⚠ Превышен лимит Slack 128 КБ — уменьшите число кадров или размер.',
+    alert_empty: 'Введите хотя бы одну строку текста.', alert_error: 'Ошибка при создании: ',
+    footer1: 'Один файл без зависимостей · всё работает в вашем браузере.',
+    footer2: 'Публикация на GitHub Pages: добавьте index.html в репозиторий и включите Settings → Pages.',
+    presets: ['Вечеринка 🎉', 'Неон', 'Классика', 'Тёмная', 'Конфета', 'Матрица', 'Солнце', 'Прозрачный'],
+    fonts: ['Black Han Sans (жирный)', 'Jua (округлый)', 'Do Hyeon', 'Gaegu (рукописный)', 'Системный', 'Моноширинный'],
+    sample: '3\n2\n1\n🎉',
+  },
+};
+let CUR = I18N.en;
+
+function detectLang() {
+  try { const s = localStorage.getItem('emojify_lang'); if (s && I18N[s]) return s; } catch (_) {}
+  const cands = (navigator.languages && navigator.languages.length) ? navigator.languages : [navigator.language || 'en'];
+  for (const c of cands) {
+    const l = (c || '').toLowerCase();
+    if (l.startsWith('ko')) return 'ko';
+    if (l.startsWith('ja')) return 'ja';
+    if (l.startsWith('zh')) return (l.includes('tw') || l.includes('hk') || l.includes('mo') || l.includes('hant')) ? 'zh-Hant' : 'zh-Hans';
+    if (l.startsWith('es')) return 'es';
+    if (l.startsWith('fr')) return 'fr';
+    if (l.startsWith('de')) return 'de';
+    if (l.startsWith('th')) return 'th';
+    if (l.startsWith('hi')) return 'hi';
+    if (l.startsWith('ru')) return 'ru';
+    if (l.startsWith('en')) return 'en';
+  }
+  return 'en';
+}
+
+function applyLang(lang) {
+  const t = I18N[lang] || I18N.en;
+  CUR = t;
+  document.documentElement.lang = lang;
+  document.title = t.title;
+  document.querySelectorAll('[data-i18n]').forEach(el => {
+    const k = el.getAttribute('data-i18n');
+    if (t[k] != null) el.textContent = t[k];
+  });
+  [...presetWrap.children].forEach((el, i) => { if (t.presets[i]) el.textContent = t.presets[i]; });
+  const fontSel = $('font');
+  t.fonts.forEach((lbl, i) => { if (fontSel.options[i]) fontSel.options[i].textContent = lbl; });
+  $('size').options[0].textContent = t.size128;
+  $('download').textContent = '⬇ ' + t.download;
+  const g = $('generate'); if (!g.disabled) g.textContent = t.generate;
+  $('lang').value = lang;
+  try { localStorage.setItem('emojify_lang', lang); } catch (_) {}
+}
+
+$('lang').onchange = e => applyLang(e.target.value);
+const initLang = detectLang();
+applyLang(initLang);
+$('frames').value = CUR.sample;
 
 // 입력 변경 시 미리보기 갱신
 ['font', 'size', 'transparent', 'rainbow', 'glow', 'bold', 'textColor', 'bgColor', 'frames']
@@ -504,9 +769,9 @@ function loopPreview() {
 // ---- GIF 생성 ----
 async function generate() {
   const frames = getFrames();
-  if (!frames.length) { alert('텍스트를 한 줄 이상 입력하세요.'); return; }
+  if (!frames.length) { alert(CUR.alert_empty); return; }
   const btn = $('generate');
-  btn.disabled = true; btn.textContent = '생성 중…';
+  btn.disabled = true; btn.textContent = CUR.generating;
 
   try {
     await document.fonts.ready;
@@ -553,16 +818,16 @@ async function generate() {
     const kb = blob.size / 1024;
     const over = kb > 128;
     $('meta').innerHTML =
-      `크기 ${box}×${box} · ${frames.length}프레임 · ` +
-      `용량 <b class="${over ? 'over' : ''}">${kb.toFixed(1)} KB</b>` +
-      (over ? '<br/><span class="over">⚠ Slack 권장 128KB 초과 — 프레임/크기를 줄여보세요.</span>'
-            : '<br/>Slack 업로드 가능 ✔ (128KB 이하)');
+      `${CUR.meta_dim} ${box}×${box} · ${frames.length} ${CUR.meta_frames} · ` +
+      `${CUR.meta_filesize} <b class="${over ? 'over' : ''}">${kb.toFixed(1)} KB</b>` +
+      (over ? `<br/><span class="over">${CUR.meta_over}</span>`
+            : `<br/>${CUR.meta_ok}`);
     $('result').classList.add('show');
   } catch (e) {
     console.error(e);
-    alert('생성 중 오류: ' + e.message);
+    alert(CUR.alert_error + e.message);
   } finally {
-    btn.disabled = false; btn.textContent = 'GIF 생성하기';
+    btn.disabled = false; btn.textContent = CUR.generate;
   }
 }
 $('generate').onclick = generate;
